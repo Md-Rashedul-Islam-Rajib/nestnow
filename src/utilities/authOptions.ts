@@ -23,10 +23,10 @@ export const authOptions: NextAuthOptions = {
 
           if (result?.success && result.data) {
             return {
-              id: result.data.id, // Ensure user object contains an `id`
+              id: result.data.id, 
               name: result.data.name,
               email: result.data.email,
-              role: result.data.role, // If you need the role field
+              role: result.data.role, 
             };
           }
 
@@ -51,7 +51,15 @@ export const authOptions: NextAuthOptions = {
     signIn: "/login",
   },
   secret: process.env.NEXTAUTH_SECRET,
+
   callbacks: {
+    async jwt({ token, user}) {
+      if (user) {
+        token.email = user.email;
+        token.role = user.role || "tenant"; 
+      }
+      return token;
+    },
     async session({ session, token }) {
       if (session?.user) {
         session.user.email = token.email as string;
@@ -59,12 +67,11 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
-    async jwt({ token, user }) {
-      if (user) {
-        token.email = user.email;
-        token.role = user.role;
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        user.role = "tenant"; 
       }
-      return token;
+      return true;
     },
   },
   session: {

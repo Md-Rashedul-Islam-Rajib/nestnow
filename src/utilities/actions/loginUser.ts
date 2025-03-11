@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-'user server'
+'use server'
 
 import { LoginFormValues } from "@/types/globals.types";
 
@@ -11,7 +11,7 @@ export const loginUser = async (data: LoginFormValues) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
-      cache: "no-cache",
+      
     });
     const userInfo = await res.json();
     return userInfo;
