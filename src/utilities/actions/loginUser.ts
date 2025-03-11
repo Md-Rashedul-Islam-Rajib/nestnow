@@ -15,8 +15,7 @@ export const loginUser = async (data: LoginFormValues) => {
     });
     const userInfo = await res.json();
     return userInfo;
-  } catch (error:any) {
+  } catch (error: any) {
     throw new Error(error.message)
   }
-    
 }

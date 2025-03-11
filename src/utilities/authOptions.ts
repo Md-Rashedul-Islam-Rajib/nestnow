@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import jwt from "jsonwebtoken";
 import { NextAuthOptions } from "next-auth";
 import GithubProvider from "next-auth/providers/github";
 import GoogleProvider from "next-auth/providers/google";
@@ -22,11 +23,12 @@ export const authOptions: NextAuthOptions = {
           const result = await loginUser(credentials);
 
           if (result?.success && result.data) {
+            const decoded: any = jwt.decode(result?.data?.token)
             return {
-              id: result.data.id, 
-              name: result.data.name,
-              email: result.data.email,
-              role: result.data.role, 
+              id: decoded.id, 
+              name: decoded.name,
+              email: decoded.email,
+              role: decoded.role || "tenant", 
             };
           }
 

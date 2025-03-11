@@ -6,10 +6,11 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
-import { navItems, navItems2 } from "@/constants/navMenu";
+
+
 import { Session } from "next-auth";
 import { usePathname } from "next/navigation";
+import { navItems, navItems2 } from "@/constants/navMenu";
 
 const NavMenu = ({ session }: { session: Session | null }) => {
   const pathname = usePathname(); // ✅ Get current route
@@ -31,16 +32,7 @@ const NavMenu = ({ session }: { session: Session | null }) => {
                       : "hover:bg-white hover:text-zinc-700"
                   }`}
                 >
-                  <Icon
-                    icon={item.icon}
-                    width={24}
-                    height={24}
-                    className={`h-4 w-4 ${
-                      isActive
-                        ? "text-white"
-                        : "text-neutral-500 dark:text-white"
-                    }`}
-                  />
+                  
                   <span>{item.name}</span>
                 </NavigationMenuItem>
               </Link>
