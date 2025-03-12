@@ -1,7 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
+import { signIn } from "@/auth";
+
 import { LoginFormValues } from "@/types/globals.types";
+import { cookies } from "next/headers";
+import {jwtDecode} from "jwt-decode"
 
 export const loginUser = async (data: LoginFormValues) => {
   try {
@@ -14,8 +18,18 @@ export const loginUser = async (data: LoginFormValues) => {
       
     });
     const userInfo = await res.json();
-    return userInfo;
+    console.log(userInfo);
+    const cookiesStore = await cookies();
+    cookiesStore.set("accessToken", userInfo?.data?.token);
+    const accessToken = cookiesStore.get("accessToken")?.value;
+    const decodedData = jwtDecode(accessToken as string);
+    return {userInfo,decodedData};
   } catch (error: any) {
     throw new Error(error.message)
   }
+}
+
+export async function socialLogin(formData:any) {
+  const action = formData.get('action');
+  await signIn(action, { redirectTo: "/" });
 }

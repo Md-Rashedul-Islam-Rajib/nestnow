@@ -4,7 +4,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import NavMenu from "./NavMenu";
 import { useRouter } from "next/navigation";
-import { signOut } from "next-auth/react";
+import { signOut} from "next-auth/react";
 import { Session } from "next-auth";
 import Image from "next/image";
 import logo from "../../../asset/logo1.png"
@@ -67,7 +67,7 @@ const Navbar = ({ session }: { session: Session | null }) => {
                       src={
                         session?.user?.image || "https://github.com/shadcn.png"
                       }
-                      alt="@shadcn"
+                      alt="User image"
                     />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>

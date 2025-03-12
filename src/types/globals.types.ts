@@ -6,6 +6,7 @@ export type TUser = {
   password: string;
   phone: number | string;
   role: "admin" | "landlord" | "tenant";
+  accessToken?: string;
   isBlocked?: boolean;
   isDeleted?: boolean;
 };

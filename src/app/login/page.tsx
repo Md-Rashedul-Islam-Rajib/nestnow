@@ -15,13 +15,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { loginformSchema, LoginFormValues } from "@/types/globals.types";
-import { loginUser } from "@/utilities/actions/loginUser";
-import { Icon } from "@iconify/react";
-import { signIn } from "next-auth/react";
 import { Separator } from "@/components/ui/separator";
+import SocialLogin from "@/components/shared/SocialLogin";
+import { signIn } from "@/auth";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const router = useRouter();
@@ -35,12 +34,17 @@ const Login = () => {
 
   const onSubmit = async (data: LoginFormValues) => {
     try {
-      const res = await loginUser(data);
-      console.log(res);
-      if (res?.success) {
-        toast.success(res?.message || "User logged successfully");
-        router.push("/");
+      
+      const result = await signIn("credentials", {
+        redirect: false,
+        email: data.email,
+        password: data.password
+      });
+      if (result?.error) {
+        toast.error(result.error)
       }
+      toast.success("Logged in successfully")
+      router.push("/");
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     }
@@ -130,7 +134,8 @@ const Login = () => {
             </div>
 
             {/* Social Login Buttons */}
-            <div className="flex flex-col gap-3">
+            <SocialLogin />
+            {/* <div className="flex flex-col gap-3">
               <Button
                 onClick={() =>
                   signIn("google", {
@@ -154,7 +159,7 @@ const Login = () => {
                 <Icon icon="mdi:github" width="22" height="22" />
                 Sign in with GitHub
               </Button>
-            </div>
+            </div> */}
           </CardContent>
         </Card>
       </div>
