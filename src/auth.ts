@@ -1,16 +1,19 @@
-import  CredentialsProvider  from 'next-auth/providers/credentials';
-import  GithubProvider  from 'next-auth/providers/github';
-import  GoogleProvider  from 'next-auth/providers/google';
-import  NextAuth  from 'next-auth';
+import Credentials from "next-auth/providers/credentials";
+import GithubProvider from "next-auth/providers/github";
+import GoogleProvider from "next-auth/providers/google";
+import NextAuth from "next-auth";
+import { authConfig } from "./auth.config";
+
 
 export const {
-  handlers: { GET, POST },
+  handlers,
   auth,
   signIn,
   signOut,
 } = NextAuth({
+  ...authConfig,
   providers: [
-    CredentialsProvider({
+    Credentials({
       name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
@@ -23,8 +26,7 @@ export const {
         }
 
         try {
-          const res = await fetch(
-            `${process.env.NEXT_PUBLIC_SERVER!}/auth/login`,
+          const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER!}/auth/login`,
             {
               method: "POST",
               headers: {
@@ -50,8 +52,8 @@ export const {
         } catch (error: unknown) {
           if (error instanceof Error) {
             throw new Error(error.message || "Login failed");
-            }
-            return null;
+          }
+          return null;
         }
       },
     }),
@@ -78,27 +80,4 @@ export const {
       },
     }),
   ],
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.role = user.role || "tenant";
-        token.accessToken = user.accessToken;
-      }
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.role = token.role || "tenant";
-        session.user.accessToken = token.accessToken as string;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-  },
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-  },
 });
