@@ -19,8 +19,8 @@ import Link from "next/link";
 import { loginformSchema, LoginFormValues } from "@/types/globals.types";
 import { Separator } from "@/components/ui/separator";
 import SocialLogin from "@/components/shared/SocialLogin";
-import { signIn } from "@/auth";
 import { useRouter } from "next/navigation";
+import { credSignIn } from "@/utilities/actions/loginUser";
 
 const Login = () => {
   const router = useRouter();
@@ -35,11 +35,10 @@ const Login = () => {
   const onSubmit = async (data: LoginFormValues) => {
     try {
       
-      const result = await signIn("credentials", {
-        redirect: false,
+      const result = await credSignIn({
         email: data.email,
         password: data.password
-      });
+      })
       if (result?.error) {
         toast.error(result.error)
       }
