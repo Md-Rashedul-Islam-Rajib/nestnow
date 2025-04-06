@@ -43,7 +43,7 @@ const Login = () => {
         toast.error(result.error)
       }
       toast.success("Logged in successfully")
-      router.push("/");
+      router.push("/dashboard");
     } catch (error: any) {
       toast.error(error?.message || "Something went wrong");
     }

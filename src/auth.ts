@@ -12,6 +12,7 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  trustHost: true,
   providers: [
     Credentials({
       name: "Credentials",
@@ -39,15 +40,17 @@ export const {
             }
           );
           const user = await res.json();
-          if (!res.ok || !user?.data) {
+          console.log("user recieved from server", user);
+          if (!res.ok ) {
             throw new Error(user?.message || "Invalid credentials");
           }
+          
           return {
             id: user.data.id,
-            name: user.data.name,
+            // name: user.data.name,
             email: user.data.email,
             role: user.data.role || "tenant",
-            accessToken: user.data.accessToken,
+            token: user.data.token,
           };
         } catch (error: unknown) {
           if (error instanceof Error) {

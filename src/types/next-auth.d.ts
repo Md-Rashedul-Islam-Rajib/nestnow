@@ -3,15 +3,16 @@ import "next-auth/jwt";
 
 declare module "next-auth" {
   interface User extends DefaultUser {
-    accessToken?: string;
-    role?: string; // Optional role
+    token?: string;
+    role?: string; 
+    id?: string;
   }
 
   interface Session extends DefaultSession {
     user: {
-      accessToken?: string;
+      token?: string;
       role: string; // Ensuring role exists in session
-    } & DefaultSession["user"];
+    };
   }
 }
 
