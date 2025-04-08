@@ -40,6 +40,7 @@
     "lucide-react": "^0.477.0",
     "next": "15.2.1",
     "next-auth": "^5.0.0-beta.25",
+    "nhb-toolbox": "^3.5.15",
     "react": "^19.0.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^19.0.0",

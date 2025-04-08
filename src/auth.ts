@@ -51,6 +51,7 @@ export const {
             email: user.data.email,
             role: user.data.role || "tenant",
             token: user.data.token,
+            userId: user.data.userId
           };
         } catch (error: unknown) {
           if (error instanceof Error) {

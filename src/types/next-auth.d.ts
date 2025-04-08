@@ -5,13 +5,16 @@ declare module "next-auth" {
   interface User extends DefaultUser {
     token?: string;
     role?: string; 
-    id?: string;
+    userId?: string;
+    image?:string;
   }
 
   interface Session extends DefaultSession {
     user: {
       token?: string;
-      role: string; // Ensuring role exists in session
+      role: string;
+      userId?: string;
+      image?: string;
     };
   }
 }
@@ -19,6 +22,6 @@ declare module "next-auth" {
 declare module "next-auth/jwt" {
   interface JWT {
     accessToken?: string;
-    role?: string; // Optional role
+    role?: string; 
   }
 }

@@ -1,8 +1,8 @@
-import { LoaderCircle } from 'lucide-react';
+import { LoaderCircle } from 'lucide-react'
 import React, { Suspense } from 'react'
-import WelcomePage from './_components/WelcomePage';
+import UpdateRentalHouseListing from './_components/UpdateRentalHouseListing'
 
-const DashboardPage = () => {
+const RentalHouseUpdate = () => {
   return (
     <Suspense
       fallback={
@@ -11,9 +11,11 @@ const DashboardPage = () => {
         </div>
       }
     >
-      <WelcomePage />
+
+      
+      <UpdateRentalHouseListing />
     </Suspense>
-  );
+  )
 }
 
-export default DashboardPage
+export default RentalHouseUpdate

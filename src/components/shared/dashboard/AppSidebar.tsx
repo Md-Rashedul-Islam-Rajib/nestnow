@@ -11,9 +11,12 @@ const AppSidebar = async () => {
     landlord: [
       {
         title: "Rental House",
-        url: "/dashboard/rental-house",
         isActive: true,
         items: [
+          {
+            title: "View Rental House",
+            url: "/dashboard/rental-house",
+          },
           {
             title: "Create Rental House",
             url: "/dashboard/rental-house/create",
@@ -28,7 +31,7 @@ const AppSidebar = async () => {
           },
         ],
       },
-     
+
       {
         title: "Messages",
         url: "/dashboard/messages",

@@ -7,6 +7,7 @@ export const authConfig = {
       if (user) {
         token.role = user.role || "tenant";
         token.accessToken = user.token;
+        token.userId = user.userId;
       }
       return token;
     },
@@ -15,6 +16,7 @@ export const authConfig = {
       if (session.user) {
         session.user.role = token.role || "tenant";
         session.user.token = token.accessToken as string;
+        session.user.id = token.userId as string;
       }
       return session;
     },

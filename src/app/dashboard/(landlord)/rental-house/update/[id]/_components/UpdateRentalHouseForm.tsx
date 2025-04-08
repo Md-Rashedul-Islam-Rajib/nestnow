@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { createFormData } from "nhb-toolbox";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Form,
@@ -13,59 +12,75 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
-  CreateRentalHouseFormValues,
-  rentalHouseSchema,
+    TRentalHouse,
+  UpdateRentaLHouseFormValues,
+  updateRentalHouseSchema,
 } from "@/types/globals.types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useForm } from "react-hook-form";
 import { TagsInput } from "@/components/extention/TagsInput";
 import { useSession } from "next-auth/react";
-import { jwtDecode } from "jwt-decode";
-import { useEffect, useState } from "react";
+// import { jwtDecode } from "jwt-decode";
+import { useState } from "react";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
-const CreateRentalHouseFrom = () => {
+const UpdateRentalHouseFrom = ({rentalHouse} : {rentalHouse: TRentalHouse}) => {
   const { data: session } = useSession()
   const token = session?.user?.token;
-  const [landlordId, setLandlordId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-  useEffect(() => {
-    if (token) {
-      try {
-        const decoded = jwtDecode<{ userId: string }>(token);
-        setLandlordId(decoded.userId);
-      } catch (err) {
-        console.error("Invalid token", err);
-      }
-    }
-  }, [token]);
-  const form = useForm<CreateRentalHouseFormValues>({
-    resolver: zodResolver(rentalHouseSchema),
+
+  const form = useForm<UpdateRentaLHouseFormValues>({
+    resolver: zodResolver(updateRentalHouseSchema),
     defaultValues: {
-      location: "",
-      description: "",
-      rent_amount: 0,
-      number_of_bedrooms: 0,
-      amenities: [],
-      images: [],
+      location: rentalHouse.location || "",
+      description: rentalHouse.description || "",
+      rent_amount: Number(rentalHouse.rent_amount) || 0,
+      number_of_bedrooms: Number(rentalHouse.number_of_bedrooms) || 0,
+      amenities: rentalHouse.amenities || [],
+      images: [], 
     },
   });
 
-  const onSubmit = async (data: CreateRentalHouseFormValues) => {
-      if (!landlordId) return console.error("Landlord ID not found!");
-
-      const payload = {
-        ...data,
-        landlord_ID: landlordId,
-      };
+  const onSubmit = async (data: UpdateRentaLHouseFormValues) => {
+      
    
 
-    const formData = createFormData(payload);
+    const formData = new FormData();
+
+    // Basic field changes
+    if (data.location !== rentalHouse.location) {
+      formData.append("location", data.location!);
+    }
+    if (data.description !== rentalHouse.description) {
+      formData.append("description", data.description!);
+    }
+    if (data.rent_amount !== Number(rentalHouse.rent_amount)) {
+      formData.append("rent_amount", data.rent_amount!.toString());
+    }
+    if (data.number_of_bedrooms !== Number(rentalHouse.number_of_bedrooms)) {
+      formData.append("number_of_bedrooms", data.number_of_bedrooms!.toString());
+    }
+    if (
+      JSON.stringify(data.amenities) !== JSON.stringify(rentalHouse.amenities)
+    ) {
+      data.amenities!.forEach((tag) => formData.append("amenities", tag));
+    }
+
+    
+    if (data.images && data.images.length > 0) {
+      data.images.forEach((file) => {
+        formData.append("images", file);
+      });
+      formData.append("replaceImages", "true");
+    }
+
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:5000/landlords/listings", {
-        method: "POST",
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER!}/landlords/listings/${rentalHouse._id}`, {
+        method: "PUT",
         headers: {
           Authorization: `${token}`, 
         },
@@ -74,8 +89,9 @@ const CreateRentalHouseFrom = () => {
 
       const result = await res.json();
       if (res.ok) {
-        toast.success("Rental house created successfully!");
-        form.reset(); // clear form
+        toast.success("Rental house updated successfully!");
+        form.reset();
+        router.push("/dashboard/rental-house")  
       } else {
         toast.error(result?.message || "Something went wrong");
       }
@@ -96,7 +112,7 @@ const CreateRentalHouseFrom = () => {
           <Card className="w-full max-w-lg shadow-xl">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold">
-                Create a Rental House
+                Update Rental House
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -183,7 +199,7 @@ const CreateRentalHouseFrom = () => {
                   />
 
                   {/* Tags Input for Amenities */}
-                  <div className="w-72">
+                  <div className="w-80">
                     <FormField
                       control={form.control}
                       name="amenities"
@@ -204,13 +220,26 @@ const CreateRentalHouseFrom = () => {
                     />
                   </div>
 
+                  {rentalHouse.images?.length > 0 && (
+                    <div className="mb-4 grid grid-cols-3 gap-2">
+                      {rentalHouse.images.map((img, i) => (
+                        <picture key={i}>
+                          <img
+                            src={img}
+                            alt={`existing-img-${i}`}
+                            className="h-24 w-full object-cover rounded-md"
+                          />
+                        </picture>
+                      ))}
+                    </div>
+                  )}
                   {/* Multiple Image Upload */}
                   <FormField
                     control={form.control}
                     name="images"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Images</FormLabel>
+                        <FormLabel>Upload New Images</FormLabel>
                         <FormControl>
                           <Input
                             type="file"
@@ -247,7 +276,7 @@ const CreateRentalHouseFrom = () => {
                     className="w-full flex items-center justify-center gap-2"
                     disabled={loading}
                   >
-                    {loading ? "Creating":"Create"}
+                    {loading ? "Updating" : "Update"}
                   </Button>
                 </form>
               </Form>
@@ -259,4 +288,4 @@ const CreateRentalHouseFrom = () => {
   );
 };
 
-export default CreateRentalHouseFrom;
+export default UpdateRentalHouseFrom;
